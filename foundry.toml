@@ -2,10 +2,10 @@
 src = "src"
 out = "out"
 libs = ["lib"]
-solc = "0.8.20"
+solc = "0.8.24"
 
 remappings = [
-    "@openzeppelin/contracts/=lib/apenzeppelin-contracts/contracts/"
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
 
 ]
 [rpc_endpoints]

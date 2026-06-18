@@ -4,23 +4,19 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-
 
 contract CertificateNFT is ERC721URIStorage, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
-
+    
+    uint256 private _tokenIds;
 
     //Certificate Data
-
-    stuct Certificate {
+    struct Certificate {
         address student;
         address issuer;
         string courseName;
         string degree;
         string institutionName;
-        uint256 issueData;
+        uint256 issueDate; // 🟢 FIXED: Changed from issueData to issueDate to match instantiation
         uint256 expiryDate;   //0 => no expiry
         bool isRevoked;
         string revokeReason;
@@ -35,34 +31,37 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
 
     //Events
     event CertificateIssued(
-    uint256 indexed tokenId,
-    address indexed student,
-    address indexed issuer,
-    string courseName);
+        uint256 indexed tokenId,
+        address indexed student,
+        address indexed issuer,
+        string courseName
+    );
+
     event CertificateRevoked(
         uint256 indexed tokenId,
         string reason
-    )
+    );
     event IssuerAuthorized(address indexed issuer, string name);
     event IssuerRevoked(address indexed issuer);
 
     //Modifiers
     modifier onlyIssuer() {
-        require(authorizedIssuer[msg.sender], "Not an authorized issuer");
+        require(authorizedIssuers[msg.sender], "Not an authorized issuer");
         _;
     }
     modifier certExists(uint256 tokenId) {
-        require(_exists(tokenId), "Certificates does not exit");
+        require(tokenId != 0, "Certificates does not exist");
         _;
     }
 
     //Constructor
-    constructor() ERC721("CetificateNFT", "CERT") Ownable(msg.sender) {
+    constructor() ERC721("CertificateNFT", "CERT") Ownable(msg.sender) {
        //Contract Owner = the platform / university admin
     }
+
     //Admin: Manage Issuers
     function addIssuer(address _issuer, string memory _name) external onlyOwner{
-        authorizedIssuer[_issuer] = true;
+        authorizedIssuers[_issuer] = true;
         issuerNames[_issuer] = _name;
         emit IssuerAuthorized(_issuer, _name);
     }
@@ -73,33 +72,31 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
     }
 
     //Issuer: Mint Certificate
-
     function issueCertificate(
         address _student,
         string memory _courseName,
         string memory _degree,
         uint256 _expiryDate,
-        string memory _ipfsHash)
-        external onlyIssuer returns (uint256) {
-            require(_student != address(0), "Invalid student address");
-            require(bytes(_ipfsHash).length > 0, "IPFS hash required");
+        string memory _ipfsHash
+    ) external onlyIssuer returns (uint256) {
+        require(_student != address(0), "Invalid student address");
+        require(bytes(_ipfsHash).length > 0, "IPFS hash required");
 
-            _tokenIds.increment();
-            uint256 tokenId = _tokenIds.current();
+        _tokenIds++;
+        uint256 tokenId = _tokenIds;
 
-            //Mint the NFT to the student's wallet
-
-            _safeMint(_student, tokenId);
-            _setTokenURI(tokenId, string(abi.encodePacked("ipfs://", _ipfsHash)));
-        }
-   // Store certificate data on-chain
+        //Mint the NFT to the student's wallet
+        _safeMint(_student, tokenId);
+        _setTokenURI(tokenId, string(abi.encodePacked("ipfs://", _ipfsHash)));
+        
+        // Store certificate data on-chain
         certificates[tokenId] = Certificate({
             student:         _student,
             issuer:          msg.sender,
             courseName:      _courseName,
             degree:          _degree,
             institutionName: issuerNames[msg.sender],
-            issueDate:       block.timestamp,
+            issueDate:       block.timestamp, // 🟢 Matches struct now
             expiryDate:      _expiryDate,
             isRevoked:       false,
             revokeReason:    "",
@@ -112,7 +109,7 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
         return tokenId;
     }      
 
-  // ── Issuer: Revoke Certificate ──────────────────────────────
+    // ── Issuer: Revoke Certificate ──────────────────────────────
     function revokeCertificate(uint256 tokenId, string memory reason)
         external onlyIssuer certExists(tokenId)
     {
@@ -127,11 +124,12 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
 
         emit CertificateRevoked(tokenId, reason);
     }       
- // ── Public: Verify Certificate ──────────────────────────────
+
+    // ── Public: Verify Certificate ──────────────────────────────
     function verifyCertificate(uint256 tokenId)
         external view certExists(tokenId)
         returns (
-            bool   isValid,
+            bool     isValid,
             string memory status,
             Certificate memory cert
         )
@@ -151,7 +149,7 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
 
         return (true, "VALID", cert);
     }
-       
+        
     // ── Public: Get Student's Certificates ─────────────────────
     function getCertsByStudent(address _student)
         external view
@@ -160,23 +158,24 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
         return studentTokens[_student];
     }    
 
-
-         // ── Soulbound: Block All Transfers ──────────────────────────
+    // ── Soulbound: Block All Transfers ──────────────────────────
+    
+    // 🟢 FIXED: Explicitly added override(ERC721, IERC721)
     function transferFrom(
         address, address, uint256
-    ) public pure override {
+    ) public pure override(ERC721, IERC721) {
         revert("Certificates are non-transferable");
     }
 
+    // 🟢 FIXED: Explicitly added override(ERC721, IERC721)
     function safeTransferFrom(
         address, address, uint256, bytes memory
-    ) public pure override {
+    ) public pure override(ERC721, IERC721) {
         revert("Certificates are non-transferable");
     }
 
-    function approve(address, uint256) public pure override {
+    // 🟢 FIXED: Explicitly added override(ERC721, IERC721)
+    function approve(address, uint256) public pure override(ERC721, IERC721) {
         revert("Certificates are non-transferable");
     }
-
-
 }
