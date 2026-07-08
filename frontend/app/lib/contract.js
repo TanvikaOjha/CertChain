@@ -1,7 +1,7 @@
 // lib/contract.js
 // Shared contract config used by both server (verify page) and client (issue page) code.
 
-export const CONTRACT_ADDRESS = "0xYourDeployedAddressHere";
+export const CONTRACT_ADDRESS = "0x3138c8785Fc577711f431e7cA4AD0f67E19dd868";
 
 export const ABI = [
   "function issueCertificate(address student, string courseName, string degree, uint256 expiryDate, string ipfsHash) external returns (uint256)",
@@ -12,9 +12,13 @@ export const ABI = [
   "function authorizedIssuers(address) external view returns (bool)",
   "function issuerNames(address) external view returns (string)",
   "event CertificateIssued(uint256 indexed tokenId, address indexed student, address indexed issuer, string courseName)",
-  "event CertificateRevoked(uint256 indexed tokenId, string reason)"
+  "event CertificateRevoked(uint256 indexed tokenId, string reason)",
+  " event IssuerAuthorized(address indexed issuer, string name)",
+  "event IssuerRevoked(address indexed issuer)"
+  
 ];
 
-export const RPC_URL = "https://rpc.ankr.com/eth_sepolia";
+export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://eth-sepolia.g.alchemy.com/v2/FdIfaKnuaSiK0J3NOuTxJ";
 
-// export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://certchain.vercel.app";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://certchain.vercel.app";
+

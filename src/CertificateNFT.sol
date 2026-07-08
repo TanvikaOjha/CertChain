@@ -16,7 +16,7 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
         string courseName;
         string degree;
         string institutionName;
-        uint256 issueDate; // 🟢 FIXED: Changed from issueData to issueDate to match instantiation
+        uint256 issueDate; 
         uint256 expiryDate;   //0 => no expiry
         bool isRevoked;
         string revokeReason;
@@ -50,7 +50,7 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
         _;
     }
     modifier certExists(uint256 tokenId) {
-        require(tokenId != 0, "Certificates does not exist");
+        require(certificates[tokenId].issuer != address(0), "Certificates does not exist");
         _;
     }
 
@@ -96,7 +96,7 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
             courseName:      _courseName,
             degree:          _degree,
             institutionName: issuerNames[msg.sender],
-            issueDate:       block.timestamp, // 🟢 Matches struct now
+            issueDate:       block.timestamp, 
             expiryDate:      _expiryDate,
             isRevoked:       false,
             revokeReason:    "",
@@ -109,7 +109,7 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
         return tokenId;
     }      
 
-    // ── Issuer: Revoke Certificate ──────────────────────────────
+    //Issuer: Revoke Certificate 
     function revokeCertificate(uint256 tokenId, string memory reason)
         external onlyIssuer certExists(tokenId)
     {
@@ -125,18 +125,12 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
         emit CertificateRevoked(tokenId, reason);
     }       
 
-    // ── Public: Verify Certificate ──────────────────────────────
-    function verifyCertificate(uint256 tokenId)
-        external view certExists(tokenId)
-        returns (
-            bool     isValid,
-            string memory status,
-            Certificate memory cert
-        )
+    // Public: Verify Certificate
+    function verifyCertificate(uint256 tokenId) external view certExists(tokenId) returns (
+        bool isValid,string memory status, Certificate memory cert)
     {
         Certificate memory c = certificates[tokenId];
         cert = c;
-
         if (c.isRevoked) {
             return (false, "REVOKED", cert);
         }
@@ -150,7 +144,7 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
         return (true, "VALID", cert);
     }
         
-    // ── Public: Get Student's Certificates ─────────────────────
+    // Public: Get Student's Certificates
     function getCertsByStudent(address _student)
         external view
         returns (uint256[] memory)
@@ -158,23 +152,21 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
         return studentTokens[_student];
     }    
 
-    // ── Soulbound: Block All Transfers ──────────────────────────
+    //Soulbound: Block All Transfers
     
-    // 🟢 FIXED: Explicitly added override(ERC721, IERC721)
     function transferFrom(
         address, address, uint256
     ) public pure override(ERC721, IERC721) {
         revert("Certificates are non-transferable");
     }
 
-    // 🟢 FIXED: Explicitly added override(ERC721, IERC721)
     function safeTransferFrom(
         address, address, uint256, bytes memory
     ) public pure override(ERC721, IERC721) {
         revert("Certificates are non-transferable");
     }
 
-    // 🟢 FIXED: Explicitly added override(ERC721, IERC721)
+    
     function approve(address, uint256) public pure override(ERC721, IERC721) {
         revert("Certificates are non-transferable");
     }

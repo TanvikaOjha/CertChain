@@ -18,7 +18,7 @@ contract Deploy is Script {
         console.log("CertificateNFT deployed at:", address(cert));
 
         // 2. Authorize deployer as issuer (for testing)
-        cert.addIssuer(deployer, "Your College Name");
+        cert.addIssuer(deployer, "IIT Dhanbad");
         console.log("Deployer added as issuer");
 
         // 3. Issue a test certificate
