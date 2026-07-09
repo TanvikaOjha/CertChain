@@ -81,14 +81,14 @@ export default function LandingPage() {
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight bg-linear-to-r from-white to-slate-400 bg-clip-text text-transparent">
-              CertiChain
+              CertChain
             </span>
           </div>
           
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
             <a href="#verify" className="hover:text-white transition-colors">Verify Gateway</a>
-            <a href="#about" className="hover:text-white transition-colors">Sovereign Protocol</a>
+            <a href="/admin" className="hover:text-white transition-colors">Issuer Management</a>
           </div>
 
           <div>
@@ -226,7 +226,6 @@ export default function LandingPage() {
 
             <form onSubmit={handleVerify} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8">
               <input  
-                type="number"
                 value={tokenId}
                 onChange={(e) => setTokenId(e.target.value)}
                 placeholder="Enter Token ID" 
@@ -236,7 +235,6 @@ export default function LandingPage() {
               <button  
                 type="submit"
                 disabled={!tokenId.trim()}
-                onClick={handleVerify}
                 className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-all disabled:opacity-50"
               >
                 {isVerifying ? "Querying RPC..." : "Run Verification"}
