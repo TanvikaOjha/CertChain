@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect} from 'react';
 import { GraduationCap, Wallet, ShieldCheck,  Ban, FileCode, Search,  PlusCircle,  Activity, ArrowRight,CheckCircle,AlertTriangle, Clock} from 'lucide-react';
 import {useRouter} from "next/navigation";
 import { ethers } from "ethers";
@@ -19,15 +19,50 @@ export default function LandingPage() {
   
 
   // Connect Wallet Handler
-  const handleConnectWallet = async () => {
- if (!window.ethereum) return alert("MetaMask not found — please install it.");
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = await provider.getSigner();
-    setAccount(await signer.getAddress());
-  };
+  const handleConnectWallet = useCallback(async () => {
+    if (!window.ethereum) return alert("MetaMask not found — please install it.");
+   try{
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  const accounts = await provider.send("eth_requestAccounts", []);
+  if(accounts.length > 0) {
+      setAccount(accounts[0]);
+    }
+  } catch (error) {
+      console.error("Error connecting wallet:", error);
+    }
+    
+  }, []);
 
-  
+  useEffect(() => {
+    if(!window.ethereum) return;
+
+    window.ethereum.request({method: 'eth_accounts'})
+    .then((accounts)=> {
+      if(accounts.length > 0) {
+        setAccount(accounts[0]);
+      }
+    })
+    .catch((err) => console.error(err));
+
+    const handleAccountsChanged = (accounts) => { 
+
+      if(accounts.length > 0) {
+        setAccount(accounts[0]);
+      }
+      else {
+        setAccount(null);
+      }
+    };
+
+    window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+    return () => {
+      if(window.ethereum.removeListener){
+      window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      }
+    };
+  }, []);
+
   const handleVerify = (e) => {
     e.preventDefault();
     if(!tokenId.trim()) return;

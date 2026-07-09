@@ -26,17 +26,49 @@ export default function Nav() {
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
-  async function connectWallet() {
-    if (!window.ethereum) return alert("MetaMask not found — please install it.");
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-      setAccount(await signer.getAddress());
-    } catch (err) {
-      console.error("Wallet connection cancelled or failed:", err);
-    }
-  }
+ const handleConnectWallet = useCallback(async () => {
+     if (!window.ethereum) return alert("MetaMask not found — please install it.");
+    try{
+   const provider = new ethers.BrowserProvider(window.ethereum);
+   const accounts = await provider.send("eth_requestAccounts", []);
+   if(accounts.length > 0) {
+       setAccount(accounts[0]);
+     }
+   } catch (error) {
+       console.error("Error connecting wallet:", error);
+     }
+     
+   }, []);
+ 
+   useEffect(() => {
+     if(!window.ethereum) return;
+ 
+     window.ethereum.request({method: 'eth_accounts'})
+     .then((accounts)=> {
+       if(accounts.length > 0) {
+         setAccount(accounts[0]);
+       }
+     })
+     .catch((err) => console.error(err));
+ 
+     const handleAccountsChanged = (accounts) => { 
+ 
+       if(accounts.length > 0) {
+         setAccount(accounts[0]);
+       }
+       else {
+         setAccount(null);
+       }
+     };
+ 
+     window.ethereum.on('accountsChanged', handleAccountsChanged);
+ 
+     return () => {
+       if(window.ethereum.removeListener){
+       window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+       }
+     };
+   }, []);
 
   const isVerify = pathname === "/" || pathname.startsWith("/verify") || currentHash;
   const isIssue = pathname.startsWith("/issue");
@@ -79,7 +111,7 @@ export default function Nav() {
 
         {/* Action Button: Wallet Connector */}
         <button
-          onClick={connectWallet}
+          onClick={handleConnectWallet}
           className={`inline-flex items-center gap-2 px-4 py-2 border rounded-xl text-xs font-mono font-medium transition-all ${
             account
               ? "bg-emerald-500/5 border-emerald-500/30 text-emerald-400 shadow-sm shadow-emerald-500/5"
