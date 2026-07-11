@@ -2,8 +2,8 @@
 
 import { useState, useRef } from "react";
 import { ethers } from "ethers";
-import Nav from "../components/Nav";
-import { CONTRACT_ADDRESS, ABI } from "../lib/contract";
+import Nav from "../../components/Nav";
+import { CONTRACT_ADDRESS, ABI } from "../../lib/contract";
 import { 
   PlusCircle, 
   User, 

@@ -1,8 +1,8 @@
 import Link from "next/link";
-import Nav from "../../components/Nav";
-import CertificateResult from "../../components/CertificateResult";
-import { getCertificate } from "../../lib/getCertificate";
-import { SITE_URL } from "../../lib/contract";
+import Nav from "../../../components/Nav";
+import CertificateResult from "../../../components/CertificateResult";
+import { getCertificate } from "../../../lib/getCertificate";
+import { SITE_URL } from "../../../lib/contract";
 import { Search, Share2, ArrowLeft, Award } from "lucide-react";
 
 export async function generateMetadata({ params }) {
