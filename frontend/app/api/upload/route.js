@@ -89,13 +89,5 @@ export async function POST(request) {
   } catch (e) {
     console.error("Upload error:", e);
     return NextResponse.json({ error: e.message || "Upload failed" }, { status: 500 });
-  }
-}
- 
-// Optional: limit upload size (Pinata free tier is generous, but keep requests reasonable)
-export const config = {
-  api: {
-    bodyParser: false, // we're using formData(), not the legacy body parser
-  },
-};
+  }};
  
