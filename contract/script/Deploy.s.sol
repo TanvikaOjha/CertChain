@@ -17,21 +17,21 @@ contract Deploy is Script {
         console.log("CertificateNFT deployed at:", address(cert));
 
         // 2. Authorize deployer as issuer (for testing)
+        // This will now automatically push 'deployer' into the allIssuers array inside the contract!
         cert.addIssuer(deployer, "IIT Dhanbad");
-        console.log("Deployer added as issuer");
+        console.log("Deployer added as issuer and tracked in state array");
 
         // 3. Issue a test certificate
-        //    Paste your CID from the IPFS upload step here:
         string memory ipfsCID = "Qmbgk2WAbuznThVTfbB9dNptriyhuLELitUp8AeNkkKWDJ";
 
         cert.issueCertificate(
             deployer, // student = yourself for testing
             "Blockchain Development",
             "B.Tech CSE",
-            0, // 0 = no expiry
+            0,        // 0 = no expiry
             ipfsCID
         );
-        console.log("Test certificate issued. Token ID: 1");
+        console.log("Test certificate issued successfully. Token ID: 1");
 
         vm.stopBroadcast();
     }

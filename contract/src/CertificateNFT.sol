@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CertificateNFT is ERC721URIStorage, Ownable {
     uint256 private _tokenIds;
+    address[] public allIssuers;
 
     //Certificate Data
     struct Certificate {
@@ -54,9 +55,15 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
 
     //Admin: Manage Issuers
     function addIssuer(address _issuer, string memory _name) external onlyOwner {
+       if(!authorizedIssuers[_issuer]){
+        allIssuers.push(_issuer);
+       }
         authorizedIssuers[_issuer] = true;
         issuerNames[_issuer] = _name;
         emit IssuerAuthorized(_issuer, _name);
+    }
+    function getAllIssuers() external view returns (address[] memory) {
+        return allIssuers;
     }
 
     function removeIssuer(address _issuer) external onlyOwner {
@@ -153,4 +160,6 @@ contract CertificateNFT is ERC721URIStorage, Ownable {
     function approve(address, uint256) public pure override(ERC721, IERC721) {
         revert("Certificates are non-transferable");
     }
+
+    
 }

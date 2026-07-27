@@ -1,6 +1,6 @@
 # CertChain
 
-CertChain is a decentralized certificate and Credential management system on Ethereum. Institutions mint tamper-proof academic credentials as soulbound NFTs. Students hold them in their wallets. Employers verify them in seconds.
+CertChain is a decentralized certificate and Credential management system on Ethereum(testnet). Institutions mint tamper-proof academic credentials as soulbound NFTs. Students hold them in their wallets. Employers verify them in seconds.
 
 ---
 
@@ -27,13 +27,12 @@ Certificates are **soulbound** — the smart contract blocks all transfers. A de
 | | |
 |---|---|
 | **App** | https://certchain.vercel.app |
-| **Contract** | https://sepolia.etherscan.io/address/ |
 | **Sample verify** | https://certchain.vercel.app/verify/1 |
 
 ---
 
 ## Pages
-
+a
 | Route | What it does | Auth needed |
 |---|---|---|
 | `/` | Verify any certificate by Token ID | None — anyone can verify |
@@ -51,10 +50,10 @@ Certificates are **soulbound** — the smart contract blocks all transfers. A de
 - Foundry for compile, test, fuzz, deploy, verify
 
 **Frontend**
-- Next.js 14 App Router
-- Server Components for the verify route (enables SSR + social link previews)
-- Client Components for wallet interactions (MetaMask / ethers.js v6)
-- Next.js API route for IPFS uploads (keeps Pinata keys server-side)
+- Next.js 
+- Server Components for the verify route
+- Client Components for wallet interactions
+- Next.js API route for IPFS uploads
 
 **Storage & infrastructure**
 - IPFS via Pinata for certificate PDFs and metadata JSON
@@ -70,8 +69,8 @@ Certificates are **soulbound** — the smart contract blocks all transfers. A de
 ### 1. Install dependencies
 
 ```bash
-git clone https://github.com/yourusername/cert-dapp
-cd cert-dapp/frontend
+git clone https://github.com/TanvikaOjha/CertChain
+cd CertChain/frontend
 npm install
 ```
 
@@ -80,7 +79,7 @@ npm install
 Open `lib/contract.js` and replace the placeholder:
 
 ```js
-export const CONTRACT_ADDRESS = "";
+export const CONTRACT_ADDRESS = "0x994cb99ad1a079cf83b1783a1d623fa8373f457a";
 ```
 
 ### 3. Set up environment variables
@@ -92,13 +91,9 @@ cp .env.local.example .env.local
 Then fill in `.env.local`:
 
 ```bash
-# Pinata — for IPFS uploads on the /issue page
-# Get these at: app.pinata.cloud → API Keys → New Key → Admin
 PINATA_API_KEY=your_pinata_api_key_here
 PINATA_SECRET_KEY=your_pinata_secret_key_here
 
-# Your production URL — used for OG / social link preview tags
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 > These keys are read only by `app/api/upload/route.js`, which runs on the server. They are never exposed to the browser.
@@ -163,18 +158,4 @@ Copy the printed contract address into `lib/contract.js`.
 
 > `PRIVATE_KEY` and `SEPOLIA_RPC_URL` only live in `contracts/.env`. 
 
----
 
-## Contributing
-
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Make changes — if touching the contract, add tests in `test/CertificateNFT.t.sol`
-4. Run `forge test` and `npm run build` — both must pass
-5. Open a pull request
-
----
-
-## License
-
-MIT
