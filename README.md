@@ -26,8 +26,8 @@ Certificates are **soulbound** — the smart contract blocks all transfers. A de
 
 | | |
 |---|---|
-| **App** | https://certchain.vercel.app |
-| **Sample verify** | https://certchain.vercel.app/verify/1 |
+| **App** | https://cert-chain-nine.vercel.app |
+| **Sample verify** | https://cert-chain-nine.vercel.app/verify/1 |
 
 ---
 

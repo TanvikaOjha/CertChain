@@ -20,7 +20,7 @@ export const ABI = [
   
 ];
 
-export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://eth-sepolia.g.alchemy.com/v2/FdIfaKnuaSiK0J3NOuTxJ";
+export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL;
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://certchain.vercel.app";
 
