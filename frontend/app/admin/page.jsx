@@ -5,20 +5,7 @@ import { ethers } from "ethers";
 import Nav from "../../components/Nav";
 import { CONTRACT_ADDRESS, ABI } from "../../lib/contract";
 import { 
-  GraduationCap, 
-  Wallet, 
-  ShieldCheck, 
-  PlusCircle, 
-  Ban, 
-  CheckCircle, 
-  ExternalLink,
-  Info,
-  AlertTriangle,
-  UserCheck,
-  Plus,
-  HelpCircle,
-  Copy,
-  Check
+  GraduationCap,  Wallet, ShieldCheck, PlusCircle, Ban, CheckCircle, ExternalLink,Info,AlertTriangle,UserCheck,Plus,HelpCircle,Copy,Check
 } from "lucide-react";
 
 // ── Extended ABI — includes issuer management functions ────────
@@ -507,39 +494,14 @@ export default function IssuersPage() {
 
 // ── Event Filtering Parser Logic Function ────────────────────
 async function fetchIssuers(contract) {
-  const authFilter = contract.filters.IssuerAuthorized();
-  const revoFilter = contract.filters.IssuerRevoked();
+const addresses = await contract.getAllIssuers();
 
-  const [authLogs, revLogs] = await Promise.all([
-    contract.queryFilter(authFilter, 0, "latest"),
-    contract.queryFilter(revoFilter, 0, "latest"),
-  ]);
-
-  const nameMap = {};
-  for (const log of authLogs) {
-    const { issuer, name } = log.args;
-    nameMap[issuer.toLowerCase()] = { address: issuer, name };
-  }
-
-  for (const log of revLogs) {
-    const { issuer } = log.args;
-    const key = issuer.toLowerCase();
-    if (nameMap[key]) {
-      const latestAuth = authLogs
-        .filter((l) => l.args.issuer.toLowerCase() === key)
-        .at(-1);
-      if (!latestAuth || latestAuth.blockNumber <= log.blockNumber) {
-        delete nameMap[key];
-      }
-    }
-  }
-
-  const entries = await Promise.all(
-    Object.values(nameMap).map(async ({ address, name }) => {
-      const isActive = await contract.authorizedIssuers(address);
-      return { address, name, isActive };
-    })
-  );
-
-  return entries;
+const entries = await Promise.all( 
+    addresses.map(async (address) => {
+   const name = await contract.issuerNames(address); 
+  const isActive = await contract.authorizedIssuers(address);
+  return {address, name, isActive};
+  })
+);
+return entries;
 }
